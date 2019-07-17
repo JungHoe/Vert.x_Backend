@@ -85,33 +85,10 @@ public class MainVerticle extends AbstractVerticle {
 		});
 		//Mapping주소 "/insert" Post method REST API
 		router.post("/insert").handler(routingContext ->{
-			
+			System.out.println("insert 들어옴");
 			HttpServerRequest request = routingContext.request();
 			
-			JsonArray params=new JsonArray()	//insert parameters 생성
-					.add(request.getParam("id")).add(request.getParam("text")).add(request.getParam("color"));
-		
-	
-			client.getConnection(res -> {	//DB와연결
-				if (res.succeeded()) {	//접속성공일시
-					SQLConnection connection = res.result();
-					connection.updateWithParams("insert into todoList1 (id,text,color) values (?,?,?)", params, e->{
-						UpdateResult updateResult = e.result();
-						System.out.println("No. of rows inserted: " + updateResult.getUpdated());
-					});
-				}else {
-					
-				}
-			});
-			
-	
-		});
-		
-	router.post("/insert").handler(routingContext ->{
-			
-			HttpServerRequest request = routingContext.request();
-			
-			JsonArray params=new JsonArray()	//insert parameters 생성
+			JsonArray params=new JsonArray()
 					.add(request.getParam("id")).add(request.getParam("text")).add(request.getParam("color"));
 		
 	
