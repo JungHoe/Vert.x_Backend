@@ -41,7 +41,6 @@ public class ServiceTest {
 
 		JsonArray params = new JsonArray().add(request.getParam("id")).add(request.getParam("text"))
 				.add(request.getParam("color"));
-
 		con.updateWithParams(query.getInsert(), params, e -> {
 			// 필요시 핸들러 작성
 //					UpdateResult updateResult = e.result();
