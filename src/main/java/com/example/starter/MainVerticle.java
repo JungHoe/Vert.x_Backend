@@ -5,6 +5,7 @@ import java.util.Set;
 
 
 import com.example.db.DataSourceConfig;
+import com.example.service.MatadataService;
 import com.example.service.ServiceTest;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -22,6 +23,7 @@ public class MainVerticle extends AbstractVerticle {
 		System.out.println("Vert.x is run...");
 
 		ServiceTest service = new ServiceTest();
+		MatadataService mservice = new MatadataService();
 		Router router = Router.router(vertx); // vert.x 라우터연결
 		HttpServer server = vertx.createHttpServer(); // vert.x 서버 생성
 		DataSourceConfig ds = new DataSourceConfig();
@@ -82,6 +84,13 @@ public class MainVerticle extends AbstractVerticle {
 //			System.out.println("업데이트 들어옴");
 			service.updateTodo(routingContext,con);
 		});
+		
+		
+		router.get("/metadata").handler(routingContext->{
+			System.out.println("metadata 진입");
+			mservice.getData(routingContext, con);
+		});
+		
 
 		server.requestHandler(router).listen(8080);
 	}

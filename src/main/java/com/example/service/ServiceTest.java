@@ -25,6 +25,7 @@ public class ServiceTest {
 			ResultSet rs = res2.result();
 			result.put("totalCnt", rs.getNumRows());
 		});
+		
 		con.query(query.getSelectList(), res3 -> { // 전체테이블가져오는 쿼리
 
 			ResultSet rs = res3.result();
