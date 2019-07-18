@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import io.netty.handler.codec.http.HttpContentEncoder.Result;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
@@ -177,6 +178,40 @@ public class MainVerticle extends AbstractVerticle {
 			});
 
 		});
+		
+		
+		
+		router.get("/metadata").handler(routingContext -> {
+			System.out.println("metadata 진입");	
+			HttpServerRequest request = routingContext.request();
+			HttpServerResponse response = routingContext.response();
+			
+			response.putHeader("content-type", "application/json");
+			
+			JsonArray params = new JsonArray().add(request.getParam("url"));
+			Map<String, Object> result = new HashMap<String, Object>();
+
+			client.getConnection(res->{
+				if(res.succeeded()) {
+					SQLConnection connection = res.result();
+					connection.queryWithParams("SELECT url, title, description, image, saveTime FROM metaData WHERE url = ?", params, 
+							e -> {
+								ResultSet rs = e.result();
+								
+								System.out.println(rs.getNext());
+								
+							});
+					
+					
+				} else {
+					
+				}
+				
+				
+			});
+			
+		});
+		
 
 		server.requestHandler(router).listen(8080);
 	}
