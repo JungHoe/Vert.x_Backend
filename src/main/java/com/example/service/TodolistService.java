@@ -39,9 +39,9 @@ public class TodolistService {
 	public void insertTodo(RoutingContext routingContext, SQLClient con) {
 		// TODO Auto-generated method stub 보드생성
 		HttpServerRequest request = routingContext.request();
-
+System.out.println(request.getParam("image"));
 		JsonArray params = new JsonArray().add(request.getParam("id")).add(request.getParam("text"))
-				.add(request.getParam("color"));
+				.add(request.getParam("color"))	.add(request.getParam("image"));
 
 		con.updateWithParams(query.getInsert(), params, e -> {
 			// 필요시 핸들러 작성
@@ -93,6 +93,16 @@ public class TodolistService {
 //					UpdateResult updateResult = e.result();
 //					System.out.println("No. of rows updated: " + updateResult.getUpdated());
 		});
+
+		
+	}
+
+	public void uploadIamge(RoutingContext routingContext, SQLClient con) {
+		HttpServerRequest request = routingContext.request();
+		System.out.println(request.getParam("id"));
+		System.out.println(request.getParam("text"));
+		System.out.println(request.getParam("color"));
+		System.out.println(request.getParam("image"));
 
 		
 	}
