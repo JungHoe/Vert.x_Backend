@@ -7,7 +7,6 @@ import java.util.Set;
 import com.example.db.DataSourceConfig;
 import com.example.service.TodolistService;
 import com.example.service.MatadataService;
-import com.example.service.ServiceTest;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
@@ -25,7 +24,6 @@ public class MainVerticle extends AbstractVerticle {
 		
 		TodolistService service = new TodolistService();
 
-		ServiceTest service = new ServiceTest();
 		MatadataService mservice = new MatadataService();
 		Router router = Router.router(vertx); // vert.x 라우터연결
 		HttpServer server = vertx.createHttpServer(); // vert.x 서버 생성
