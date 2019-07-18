@@ -1,14 +1,20 @@
 package com.example.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
 import com.example.mapper.TodoListMapper;
+
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLClient;
+import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
 
 public class ServiceTest {
@@ -36,17 +42,25 @@ public class ServiceTest {
 	}
 
 	public void insertTodo(RoutingContext routingContext, SQLClient con) {
-		// TODO Auto-generated method stub 보드생성
 		HttpServerRequest request = routingContext.request();
-
+		String id = routingContext.request().getFormAttribute("id");
+		String fileName = routingContext.request().getFormAttribute("fileName");
+		
+		Set<FileUpload> uploads = routingContext.fileUploads();
+		for(FileUpload upload : uploads) {
+	        File uploadedFile = new File(upload.uploadedFileName());
+	        uploadedFile.renameTo(new File("files/" +id+"_"+upload.fileName()));
+	        try {
+				uploadedFile.createNewFile();
+			} catch (IOException e1) {
+			}
+	        new File(upload.uploadedFileName()).delete();
+		}
+		
 		JsonArray params = new JsonArray().add(request.getParam("id")).add(request.getParam("text"))
-				.add(request.getParam("color"));
+				.add(request.getParam("color")).add(id+"_"+fileName);
 		con.updateWithParams(query.getInsert(), params, e -> {
-			// 필요시 핸들러 작성
-//					UpdateResult updateResult = e.result();
-//					System.out.println("No. of rows inserted: " + updateResult.getUpdated());
 		});
-
 	}
 
 	public void checkTodo(RoutingContext routingContext, SQLClient con) {

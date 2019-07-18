@@ -14,6 +14,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.sql.SQLClient;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 
 public class MainVerticle extends AbstractVerticle {
@@ -49,39 +50,37 @@ public class MainVerticle extends AbstractVerticle {
 		allowedMethods.add(HttpMethod.DELETE);
 		allowedMethods.add(HttpMethod.PATCH);
 
+		router.route().handler(BodyHandler.create().setUploadsDirectory("files"));
+		
 		router.route().handler(CorsHandler.create("*") // Cors handler
 				.allowedHeaders(allowedHeaders).allowedMethods(allowedMethods));
 
 		// Mapping주소 "/" get method REST API
 		router.get("/").handler(routingContext -> {
-
 			service.getTodoList(routingContext, con);
-
 		});
+		
+		
 		// Mapping주소 "/insert" Post method REST API
 		router.post("/insert").handler(routingContext -> {
-//			System.out.println("insert 들어옴");
-
 			service.insertTodo(routingContext, con);
-
 		});
 
 		// Mapping주소 "/checked" patch method REST API
 		router.patch("/checked").handler(routingContext -> {
-//System.out.println("체크 들어옴");
+		//System.out.println("체크 들어옴");
 			service.checkTodo(routingContext, con);
-
 		});
+		
 		// Mapping주소 "/delete" delete method REST API
 		router.delete("/delete").handler(routingContext -> {
-//			System.out.println("딜리트 들어옴");
+		// System.out.println("딜리트 들어옴");
 			service.deleteTodo(routingContext, con);
-
 		});
 
 		// Mapping주소 "/todoitem" patch method REST API
 		router.patch("/todoitem").handler(routingContext -> {
-//			System.out.println("업데이트 들어옴");
+		//			System.out.println("업데이트 들어옴");
 			service.updateTodo(routingContext,con);
 		});
 		
