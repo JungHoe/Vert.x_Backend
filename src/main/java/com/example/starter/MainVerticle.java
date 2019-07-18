@@ -3,7 +3,8 @@ package com.example.starter;
 import java.util.HashSet;
 import java.util.Set;
 import com.example.db.DataSourceConfig;
-import com.example.service.ServiceTest;
+import com.example.service.TodolistService;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
@@ -18,8 +19,8 @@ public class MainVerticle extends AbstractVerticle {
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
 		System.out.println("Vert.x is run...");
-
-		ServiceTest service = new ServiceTest();
+		
+		TodolistService service = new TodolistService();
 		Router router = Router.router(vertx); // vert.x 라우터연결
 		HttpServer server = vertx.createHttpServer(); // vert.x 서버 생성
 		DataSourceConfig ds = new DataSourceConfig();
@@ -32,21 +33,9 @@ public class MainVerticle extends AbstractVerticle {
 			}
 		}); // SQL Connection 생성
 
-		Set<String> allowedHeaders = new HashSet<>(); // CORS
-		allowedHeaders.add("x-requested-with");
-		allowedHeaders.add("Access-Control-Allow-Origin");
-		allowedHeaders.add("origin");
-		allowedHeaders.add("Content-Type");
-		allowedHeaders.add("accept");
-		allowedHeaders.add("X-PINGARUNER");
-		Set<HttpMethod> allowedMethods = new HashSet<>();
-		allowedMethods.add(HttpMethod.GET);
-		allowedMethods.add(HttpMethod.POST);
-		allowedMethods.add(HttpMethod.DELETE);
-		allowedMethods.add(HttpMethod.PATCH);
-
-		router.route().handler(CorsHandler.create("*") // Cors handler
-				.allowedHeaders(allowedHeaders).allowedMethods(allowedMethods));
+		// Cors handler 생성
+		router.route().handler(CorsHandler.create("*")
+		.allowedHeaders(getAllowedHeaders()).allowedMethods(getAllowedMethods()));
 
 		// Mapping주소 "/" get method REST API
 		router.get("/").handler(routingContext -> {
@@ -83,5 +72,28 @@ public class MainVerticle extends AbstractVerticle {
 
 		server.requestHandler(router).listen(8080);
 	}
+	
+	
+	private Set<String> getAllowedHeaders() {
+		Set<String> allowedHeaders = new HashSet<>(); // CORS
+		allowedHeaders.add("x-requested-with");
+		allowedHeaders.add("Access-Control-Allow-Origin");
+		allowedHeaders.add("origin");
+		allowedHeaders.add("Content-Type");
+		allowedHeaders.add("accept");
+		allowedHeaders.add("X-PINGARUNER");
+		return allowedHeaders;
+	}
+	
+	private Set<HttpMethod> getAllowedMethods() {
+		Set<HttpMethod> allowedMethods = new HashSet<>();
+		allowedMethods.add(HttpMethod.GET);
+		allowedMethods.add(HttpMethod.POST);
+		allowedMethods.add(HttpMethod.DELETE);
+		allowedMethods.add(HttpMethod.PATCH);
+		return allowedMethods;
+	}
+	
+	
 
 }
