@@ -22,7 +22,6 @@ public class MainVerticle extends AbstractVerticle {
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
 		System.out.println("Vert.x is run...");
-
 		ServiceTest service = new ServiceTest();
 		MatadataService mservice = new MatadataService();
 		Router router = Router.router(vertx); // vert.x 라우터연결
@@ -50,6 +49,7 @@ public class MainVerticle extends AbstractVerticle {
 		allowedMethods.add(HttpMethod.DELETE);
 		allowedMethods.add(HttpMethod.PATCH);
 
+		// 바디핸들러 생성 및 파일 저장경로 지정
 		router.route().handler(BodyHandler.create().setUploadsDirectory("files"));
 		
 		router.route().handler(CorsHandler.create("*") // Cors handler
@@ -88,6 +88,11 @@ public class MainVerticle extends AbstractVerticle {
 		router.get("/metadata").handler(routingContext->{
 			System.out.println("metadata 진입");
 			mservice.getData(routingContext, con);
+		});
+		
+		router.get("/image").handler(routingContext ->{
+			System.out.println("image 진입");
+			service.getImage(routingContext, con);
 		});
 		
 

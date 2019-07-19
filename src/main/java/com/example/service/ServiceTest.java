@@ -52,13 +52,15 @@ public class ServiceTest {
 	        uploadedFile.renameTo(new File("files/" +id+"_"+upload.fileName()));
 	        try {
 				uploadedFile.createNewFile();
-			} catch (IOException e1) {
+				System.out.println("파일생성 완료");
+			} catch (Exception e1) {
 			}
 	        new File(upload.uploadedFileName()).delete();
 		}
-		
+
 		JsonArray params = new JsonArray().add(request.getParam("id")).add(request.getParam("text"))
 				.add(request.getParam("color")).add(id+"_"+fileName);
+		
 		con.updateWithParams(query.getInsert(), params, e -> {
 		});
 	}
@@ -104,8 +106,20 @@ public class ServiceTest {
 //					UpdateResult updateResult = e.result();
 //					System.out.println("No. of rows updated: " + updateResult.getUpdated());
 		});
-
-		
 	}
+	
+	public void getImage(RoutingContext routingContext, SQLClient con) {
+		HttpServerRequest request = routingContext.request();
+		String fileName = request.getParam("fileName");
+		System.out.println(fileName);
+		// request.response().sendFile("files/"+fileName);
+		request.response().sendFile("files/"+fileName, 0, ev ->{
+			if(ev.succeeded()) {
+				System.out.println("성공");
+			} else {
+				System.out.println("실패");
+			}
+		});
+	};
 
 }
