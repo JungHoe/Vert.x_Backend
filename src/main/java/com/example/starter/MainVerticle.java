@@ -26,22 +26,25 @@ public class MainVerticle extends AbstractVerticle {
 
 		TodoListService service = new TodoListService();
 		MatadataService mservice = new MatadataService();
-		Router router = Router.router(vertx); // vert.x 라우터연결
-		HttpServer server = vertx.createHttpServer(); // vert.x 서버 생성
+		Router router = Router.router(vertx); 				// vert.x 라우터연결
+		HttpServer server = vertx.createHttpServer(); 		// vert.x 서버 생성
 		DataSourceConfig ds = new DataSourceConfig();
-
+		
+		 // SQL Connection 생성
 		SQLClient con = JDBCClient.createShared(vertx, ds.getConfig()).getConnection(res -> {
 			if (res.succeeded()) {
 				System.out.println("접속성공");
 			} else {
 				System.out.println("접속실패");
 			}
-		}); // SQL Connection 생성
+		});
 
 
 		// Cors handler 생성
 		router.route().handler(
-				CorsHandler.create("*").allowedHeaders(getAllowedHeaders()).allowedMethods(getAllowedMethods()));
+				CorsHandler.create("*")
+				.allowedHeaders(getAllowedHeaders())
+				.allowedMethods(getAllowedMethods()));
 
 		Set<String> allowedHeaders = new HashSet<>(); // CORS
 		allowedHeaders.add("x-requested-with");
@@ -50,15 +53,18 @@ public class MainVerticle extends AbstractVerticle {
 		allowedHeaders.add("Content-Type");
 		allowedHeaders.add("accept");
 		allowedHeaders.add("X-PINGARUNER");
+		
 		Set<HttpMethod> allowedMethods = new HashSet<>();
 		allowedMethods.add(HttpMethod.GET);
 		allowedMethods.add(HttpMethod.POST);
 		allowedMethods.add(HttpMethod.DELETE);
 		allowedMethods.add(HttpMethod.PATCH);
 
+		// BodyHandler
 		router.route().handler(BodyHandler.create().setUploadsDirectory("files"));
 		
-		router.route().handler(CorsHandler.create("*") // Cors handler
+		// Cors handler
+		router.route().handler(CorsHandler.create("*") 
 				.allowedHeaders(allowedHeaders).allowedMethods(allowedMethods));
 
 
@@ -75,24 +81,25 @@ public class MainVerticle extends AbstractVerticle {
 
 		// Mapping주소 "/checked" patch method REST API
 		router.patch("/checked").handler(routingContext -> {
-		//System.out.println("체크 들어옴");
 			service.checkTodo(routingContext, con);
 		});
 		
 		// Mapping주소 "/delete" delete method REST API
 		router.delete("/delete").handler(routingContext -> {
-		// System.out.println("딜리트 들어옴");
 			service.deleteTodo(routingContext, con);
 		});
 
 		// Mapping주소 "/todoitem" patch method REST API
 		router.patch("/todoitem").handler(routingContext -> {
-		//			System.out.println("업데이트 들어옴");
 			service.updateTodo(routingContext,con);
 		});
 
 		router.get("/metadata").handler(routingContext -> {
 			mservice.getData(routingContext, con);
+		});
+		
+		router.get("/image").handler(routingContext -> {
+			service.getImage(routingContext, con);
 		});
 
 

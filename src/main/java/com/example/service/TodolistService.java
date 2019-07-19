@@ -20,7 +20,6 @@ public class TodoListService {
 	TodoListMapper query = new TodoListMapper();
 
 	public void getTodoList(RoutingContext routingContext, SQLClient con) {
-		// TODO Auto-generated method stub 리스트가져옴
 		Map<String, Object> result = new HashMap<String, Object>(); // 결과 담는 객체
 		HttpServerResponse response = routingContext.response();
 
@@ -32,16 +31,15 @@ public class TodoListService {
 		});
 		
 		con.query(query.getSelectList(), res3 -> { // 전체테이블가져오는 쿼리
-
 			ResultSet rs = res3.result();
 			result.put("todoList", rs.getRows());
 			response.end(Json.encodePrettily(result)); // result값을 리턴
-
 		});
 	}
 
 	public void insertTodo(RoutingContext routingContext, SQLClient con) {
 		HttpServerRequest request = routingContext.request();
+		
 		String id = routingContext.request().getFormAttribute("id");
 		String fileName = routingContext.request().getFormAttribute("fileName");
 		
@@ -51,7 +49,6 @@ public class TodoListService {
 	        uploadedFile.renameTo(new File("files/" +id+"_"+upload.fileName()));
 	        try {
 				uploadedFile.createNewFile();
-				System.out.println("파일생성 완료");
 			} catch (Exception e1) {
 			}
 	        new File(upload.uploadedFileName()).delete();
@@ -65,59 +62,38 @@ public class TodoListService {
 	}
 
 	public void checkTodo(RoutingContext routingContext, SQLClient con) {
-		// TODO Auto-generated method stub 체크 함
 		HttpServerRequest request = routingContext.request();
 
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("checked")).add(request.getParam("id"));
 
 		con.updateWithParams(query.getChecked(), params, e -> {
-			// 필요시 핸들러 작성
-//					UpdateResult updateResult = e.result();
-//					System.out.println("No. of rows updated: " + updateResult.getUpdated());
-
 		});
 	}
 
 	public void deleteTodo(RoutingContext routingContext, SQLClient con) {
-		// TODO Auto-generated method stub
 		HttpServerRequest request = routingContext.request();
 
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("id"));
 		con.updateWithParams(query.getDelete(), params, e -> {
-			// 필요시 핸들러 작성
-//			UpdateResult updateResult = e.result();
-//			System.out.println("No. of rows updated: " + updateResult.getUpdated());
 		});
 		
 	}
 
 	public void updateTodo(RoutingContext routingContext, SQLClient con) {
-		// TODO Auto-generated method stub
 		HttpServerRequest request = routingContext.request();
-
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("text")).add(request.getParam("color")).add(request.getParam("checked"))
 				.add(request.getParam("id"));
 		con.updateWithParams(query.getUpdate(), params, e -> {
-			// 필요시 핸들러 작성
-//					UpdateResult updateResult = e.result();
-//					System.out.println("No. of rows updated: " + updateResult.getUpdated());
 		});
 	}
 	
 	public void getImage(RoutingContext routingContext, SQLClient con) {
 		HttpServerRequest request = routingContext.request();
 		String fileName = request.getParam("fileName");
-		System.out.println(fileName);
-		// request.response().sendFile("files/"+fileName);
 		request.response().sendFile("files/"+fileName, 0, ev ->{
-			if(ev.succeeded()) {
-				System.out.println("성공");
-			} else {
-				System.out.println("실패");
-			}
 		});
 	};
 
