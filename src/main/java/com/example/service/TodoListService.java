@@ -1,7 +1,6 @@
 package com.example.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +16,7 @@ import io.vertx.ext.sql.SQLClient;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
 
-public class ServiceTest {
+public class TodoListService {
 	TodoListMapper query = new TodoListMapper();
 
 	public void getTodoList(RoutingContext routingContext, SQLClient con) {
