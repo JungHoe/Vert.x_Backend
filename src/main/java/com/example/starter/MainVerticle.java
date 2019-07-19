@@ -4,8 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.example.db.DataSourceConfig;
-import com.example.service.TodolistService;
 import com.example.service.MatadataService;
+import com.example.service.TodolistService;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
@@ -23,7 +24,6 @@ public class MainVerticle extends AbstractVerticle {
 		System.out.println("Vert.x is run...");
 
 		TodolistService service = new TodolistService();
-
 		MatadataService mservice = new MatadataService();
 		Router router = Router.router(vertx); // vert.x 라우터연결
 		HttpServer server = vertx.createHttpServer(); // vert.x 서버 생성
@@ -75,7 +75,6 @@ public class MainVerticle extends AbstractVerticle {
 		});
 
 		router.get("/metadata").handler(routingContext -> {
-
 			mservice.getData(routingContext, con);
 		});
 

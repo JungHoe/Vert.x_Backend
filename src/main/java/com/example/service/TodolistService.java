@@ -28,41 +28,33 @@ public class TodolistService {
 		});
 		
 		con.query(query.getSelectList(), res3 -> { // 전체테이블가져오는 쿼리
-
 			ResultSet rs = res3.result();
 			result.put("todoList", rs.getRows());
 			response.end(Json.encodePrettily(result)); // result값을 리턴
-
 		});
 	}
 
 	public void insertTodo(RoutingContext routingContext, SQLClient con) {
 		// TODO Auto-generated method stub 보드생성
 		HttpServerRequest request = routingContext.request();
-System.out.println(request.getParam("image"));
+		
+		System.out.println(request.getParam("image"));
+		
 		JsonArray params = new JsonArray().add(request.getParam("id")).add(request.getParam("text"))
 				.add(request.getParam("color"))	.add(request.getParam("image"));
 
 		con.updateWithParams(query.getInsert(), params, e -> {
-			// 필요시 핸들러 작성
-//					UpdateResult updateResult = e.result();
-//					System.out.println("No. of rows inserted: " + updateResult.getUpdated());
 		});
 
 	}
 
 	public void checkTodo(RoutingContext routingContext, SQLClient con) {
-		// TODO Auto-generated method stub 체크 함
 		HttpServerRequest request = routingContext.request();
 
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("checked")).add(request.getParam("id"));
 
 		con.updateWithParams(query.getChecked(), params, e -> {
-			// 필요시 핸들러 작성
-//					UpdateResult updateResult = e.result();
-//					System.out.println("No. of rows updated: " + updateResult.getUpdated());
-
 		});
 	}
 
@@ -73,25 +65,17 @@ System.out.println(request.getParam("image"));
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("id"));
 		con.updateWithParams(query.getDelete(), params, e -> {
-			// 필요시 핸들러 작성
-//			UpdateResult updateResult = e.result();
-//			System.out.println("No. of rows updated: " + updateResult.getUpdated());
 		});
 		
 	}
 
 	public void updateTodo(RoutingContext routingContext, SQLClient con) {
-		
-		// TODO Auto-generated method stub
 		HttpServerRequest request = routingContext.request();
 
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("text")).add(request.getParam("color")).add(request.getParam("checked"))
 				.add(request.getParam("id"));
-		con.updateWithParams(query.getUpdate(), params, e -> {
-			// 필요시 핸들러 작성
-//					UpdateResult updateResult = e.result();
-//					System.out.println("No. of rows updated: " + updateResult.getUpdated());
+				con.updateWithParams(query.getUpdate(), params, e -> {
 		});
 
 		
