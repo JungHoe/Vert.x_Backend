@@ -3,10 +3,10 @@ package com.example.starter;
 import java.util.HashSet;
 import java.util.Set;
 
+
 import com.example.db.DataSourceConfig;
 import com.example.service.MatadataService;
 import com.example.service.TodoListService;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
@@ -19,32 +19,23 @@ import io.vertx.ext.web.handler.CorsHandler;
 
 public class MainVerticle extends AbstractVerticle {
 
-	
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
 		System.out.println("Vert.x is run...");
 
 		TodoListService service = new TodoListService();
 		MatadataService mservice = new MatadataService();
-		Router router = Router.router(vertx); 				// vert.x 라우터연결
-		HttpServer server = vertx.createHttpServer(); 		// vert.x 서버 생성
+		Router router = Router.router(vertx); // vert.x 라우터연결
+		HttpServer server = vertx.createHttpServer(); // vert.x 서버 생성
 		DataSourceConfig ds = new DataSourceConfig();
-		
-		 // SQL Connection 생성
+
 		SQLClient con = JDBCClient.createShared(vertx, ds.getConfig()).getConnection(res -> {
 			if (res.succeeded()) {
 				System.out.println("접속성공");
 			} else {
 				System.out.println("접속실패");
 			}
-		});
-
-
-		// Cors handler 생성
-		router.route().handler(
-				CorsHandler.create("*")
-				.allowedHeaders(getAllowedHeaders())
-				.allowedMethods(getAllowedMethods()));
+		}); // SQL Connection 생성
 
 		Set<String> allowedHeaders = new HashSet<>(); // CORS
 		allowedHeaders.add("x-requested-with");
@@ -53,20 +44,16 @@ public class MainVerticle extends AbstractVerticle {
 		allowedHeaders.add("Content-Type");
 		allowedHeaders.add("accept");
 		allowedHeaders.add("X-PINGARUNER");
-		
 		Set<HttpMethod> allowedMethods = new HashSet<>();
 		allowedMethods.add(HttpMethod.GET);
 		allowedMethods.add(HttpMethod.POST);
 		allowedMethods.add(HttpMethod.DELETE);
 		allowedMethods.add(HttpMethod.PATCH);
 
-		// BodyHandler
 		router.route().handler(BodyHandler.create().setUploadsDirectory("files"));
 		
-		// Cors handler
-		router.route().handler(CorsHandler.create("*") 
+		router.route().handler(CorsHandler.create("*") // Cors handler
 				.allowedHeaders(allowedHeaders).allowedMethods(allowedMethods));
-
 
 		// Mapping주소 "/" get method REST API
 		router.get("/").handler(routingContext -> {
@@ -93,47 +80,18 @@ public class MainVerticle extends AbstractVerticle {
 		router.patch("/todoitem").handler(routingContext -> {
 			service.updateTodo(routingContext,con);
 		});
-
-		router.get("/metadata").handler(routingContext -> {
+		
+		
+		router.get("/metadata").handler(routingContext->{
 			mservice.getData(routingContext, con);
 		});
 		
-		router.get("/image").handler(routingContext -> {
+		router.get("/image").handler(routingContext->{
 			service.getImage(routingContext, con);
-		});
-
+		});		
+		
 
 		server.requestHandler(router).listen(8080);
-	}
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private Set<String> getAllowedHeaders() {
-		Set<String> allowedHeaders = new HashSet<>(); // CORS
-		allowedHeaders.add("x-requested-with");
-		allowedHeaders.add("Access-Control-Allow-Origin");
-		allowedHeaders.add("origin");
-		allowedHeaders.add("Content-Type");
-		allowedHeaders.add("accept");
-		allowedHeaders.add("X-PINGARUNER");
-		return allowedHeaders;
-	}
-
-	private Set<HttpMethod> getAllowedMethods() {
-		Set<HttpMethod> allowedMethods = new HashSet<>();
-		allowedMethods.add(HttpMethod.GET);
-		allowedMethods.add(HttpMethod.POST);
-		allowedMethods.add(HttpMethod.DELETE);
-		allowedMethods.add(HttpMethod.PATCH);
-		return allowedMethods;
 	}
 
 }

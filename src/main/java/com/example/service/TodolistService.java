@@ -39,9 +39,10 @@ public class TodoListService {
 
 	public void insertTodo(RoutingContext routingContext, SQLClient con) {
 		HttpServerRequest request = routingContext.request();
-		
+		System.out.println("진입");
 		String id = routingContext.request().getFormAttribute("id");
 		String fileName = routingContext.request().getFormAttribute("fileName");
+		
 		
 		Set<FileUpload> uploads = routingContext.fileUploads();
 		for(FileUpload upload : uploads) {
@@ -49,13 +50,18 @@ public class TodoListService {
 	        uploadedFile.renameTo(new File("files/" +id+"_"+upload.fileName()));
 	        try {
 				uploadedFile.createNewFile();
-			} catch (Exception e1) {
+			} 
+	        	catch (Exception e1) {
 			}
 	        new File(upload.uploadedFileName()).delete();
 		}
-
-		JsonArray params = new JsonArray().add(request.getParam("id")).add(request.getParam("text"))
-				.add(request.getParam("color")).add(id+"_"+fileName);
+		JsonArray params = new JsonArray();
+		
+		if(fileName == null) {
+			params.add(request.getParam("id")).add(request.getParam("text")).add(request.getParam("color")).addNull();
+		} else {
+			params.add(request.getParam("id")).add(request.getParam("text")).add(request.getParam("color")).add(id+"_"+fileName);
+		}
 		
 		con.updateWithParams(query.getInsert(), params, e -> {
 		});
@@ -73,7 +79,6 @@ public class TodoListService {
 
 	public void deleteTodo(RoutingContext routingContext, SQLClient con) {
 		HttpServerRequest request = routingContext.request();
-
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("id"));
 		con.updateWithParams(query.getDelete(), params, e -> {
