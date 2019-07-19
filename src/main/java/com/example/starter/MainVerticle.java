@@ -3,7 +3,6 @@ package com.example.starter;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import com.example.db.DataSourceConfig;
 import com.example.service.TodolistService;
 import com.example.service.MatadataService;
@@ -18,10 +17,11 @@ import io.vertx.ext.web.handler.CorsHandler;
 
 public class MainVerticle extends AbstractVerticle {
 
+	
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
 		System.out.println("Vert.x is run...");
-		
+
 		TodolistService service = new TodolistService();
 
 		MatadataService mservice = new MatadataService();
@@ -38,8 +38,8 @@ public class MainVerticle extends AbstractVerticle {
 		}); // SQL Connection 생성
 
 		// Cors handler 생성
-		router.route().handler(CorsHandler.create("*")
-		.allowedHeaders(getAllowedHeaders()).allowedMethods(getAllowedMethods()));
+		router.route().handler(
+				CorsHandler.create("*").allowedHeaders(getAllowedHeaders()).allowedMethods(getAllowedMethods()));
 
 		// Mapping주소 "/" get method REST API
 		router.get("/").handler(routingContext -> {
@@ -57,13 +57,13 @@ public class MainVerticle extends AbstractVerticle {
 
 		// Mapping주소 "/checked" patch method REST API
 		router.patch("/checked").handler(routingContext -> {
-//System.out.println("체크 들어옴");
+			// System.out.println("체크 들어옴");
 			service.checkTodo(routingContext, con);
 
 		});
 		// Mapping주소 "/delete" delete method REST API
 		router.delete("/delete").handler(routingContext -> {
-//			System.out.println("딜리트 들어옴");
+			// System.out.println("딜리트 들어옴");
 			service.deleteTodo(routingContext, con);
 
 		});
@@ -71,18 +71,26 @@ public class MainVerticle extends AbstractVerticle {
 		// Mapping주소 "/todoitem" patch method REST API
 		router.patch("/todoitem").handler(routingContext -> {
 //			System.out.println("업데이트 들어옴");
-			service.updateTodo(routingContext,con);
+			service.updateTodo(routingContext, con);
 		});
-		
-		
-		router.get("/metadata").handler(routingContext->{
-			System.out.println("metadata 진입");
+
+		router.get("/metadata").handler(routingContext -> {
+
 			mservice.getData(routingContext, con);
 		});
-		
+
 
 		server.requestHandler(router).listen(8080);
 	}
+
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	private Set<String> getAllowedHeaders() {
@@ -95,7 +103,7 @@ public class MainVerticle extends AbstractVerticle {
 		allowedHeaders.add("X-PINGARUNER");
 		return allowedHeaders;
 	}
-	
+
 	private Set<HttpMethod> getAllowedMethods() {
 		Set<HttpMethod> allowedMethods = new HashSet<>();
 		allowedMethods.add(HttpMethod.GET);
@@ -104,7 +112,5 @@ public class MainVerticle extends AbstractVerticle {
 		allowedMethods.add(HttpMethod.PATCH);
 		return allowedMethods;
 	}
-	
-	
 
 }
