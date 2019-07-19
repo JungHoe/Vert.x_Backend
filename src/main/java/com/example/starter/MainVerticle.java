@@ -17,6 +17,7 @@ import io.vertx.ext.web.handler.CorsHandler;
 
 public class MainVerticle extends AbstractVerticle {
 
+	
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
 		System.out.println("Vert.x is run...");
@@ -78,11 +79,6 @@ public class MainVerticle extends AbstractVerticle {
 			mservice.getData(routingContext, con);
 		});
 
-		router.post("/uploadimage").handler(routingContext -> {
-			System.out.println("들어옴");
-			service.uploadIamge(routingContext,con);
-			
-		});
 
 		server.requestHandler(router).listen(8080);
 	}

@@ -97,14 +97,6 @@ System.out.println(request.getParam("image"));
 		
 	}
 
-	public void uploadIamge(RoutingContext routingContext, SQLClient con) {
-		HttpServerRequest request = routingContext.request();
-		System.out.println(request.getParam("id"));
-		System.out.println(request.getParam("text"));
-		System.out.println(request.getParam("color"));
-		System.out.println(request.getParam("image"));
 
-		
-	}
 
 }
