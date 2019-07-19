@@ -42,8 +42,7 @@ public class TodoListService {
 		System.out.println("진입");
 		String id = routingContext.request().getFormAttribute("id");
 		String fileName = routingContext.request().getFormAttribute("fileName");
-		
-		
+			
 		Set<FileUpload> uploads = routingContext.fileUploads();
 		for(FileUpload upload : uploads) {
 	        File uploadedFile = new File(upload.uploadedFileName());
@@ -55,16 +54,19 @@ public class TodoListService {
 			}
 	        new File(upload.uploadedFileName()).delete();
 		}
-		JsonArray params = new JsonArray();
+		
+		JsonArray params = new JsonArray()
+				.add(request.getParam("id"))
+				.add(request.getParam("text"))
+				.add(request.getParam("color"));
 		
 		if(fileName == null) {
-			params.add(request.getParam("id")).add(request.getParam("text")).add(request.getParam("color")).addNull();
+			params.addNull();
 		} else {
-			params.add(request.getParam("id")).add(request.getParam("text")).add(request.getParam("color")).add(id+"_"+fileName);
+			params.add("http://localhost:8080/image?fileName="+id+"_"+fileName);
 		}
 		
-		con.updateWithParams(query.getInsert(), params, e -> {
-		});
+		con.updateWithParams(query.getInsert(), params, e -> {});
 	}
 
 	public void checkTodo(RoutingContext routingContext, SQLClient con) {
