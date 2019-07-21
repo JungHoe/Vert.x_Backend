@@ -26,6 +26,7 @@
 	</properties>
 
 	<dependencyManagement>
+		
 		<dependencies>
 			<dependency>
 				<groupId>io.vertx</groupId>
@@ -39,12 +40,13 @@
 
 	<dependencies>
 	<!-- https://mvnrepository.com/artifact/c3p0/c3p0 -->
-<dependency>
-    <groupId>c3p0</groupId>
-    <artifactId>c3p0</artifactId>
-    <version>0.9.1.2</version>
-</dependency>
-	<dependency>
+		<dependency>
+		    <groupId>c3p0</groupId>
+		    <artifactId>c3p0</artifactId>
+		    <version>0.9.1.2</version>
+		</dependency>
+
+		<dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.39</version>
@@ -52,21 +54,21 @@
         
         <!-- Jsoup -->
       	<dependency>
-			<!-- jsoup HTML parser library @ https://jsoup.org/ -->
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>1.11.2</version>
 		</dependency>
 
-		
 		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-jdbc-client</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-web</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-junit5</artifactId>
