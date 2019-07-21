@@ -9,7 +9,7 @@ import io.vertx.core.json.JsonArray;
 
 public class Opengraph {
 
-	
+	// Get MetaData Crawling For Opengraph
 	public JsonArray getMetaData(String url) {
 		
 		JsonArray result = new JsonArray();
@@ -58,7 +58,7 @@ public class Opengraph {
 			 result.add(description);
 			 result.add(image);
 			
-			System.out.println("---------- 크롤링 결과");
+			System.out.println("------ Crawling Result");
 			System.out.println(url+", "+title+", "+description+", "+image);
 			System.out.println("-----------------------");
 			

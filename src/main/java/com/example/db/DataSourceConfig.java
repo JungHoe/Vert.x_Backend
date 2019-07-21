@@ -10,17 +10,7 @@ public class DataSourceConfig {
 	private String user;
 	private String password;
 
-//	= new JsonObject() // DataSource 객체 생성	
-//			.put("driver_class", "com.mysql.jdbc.Driver").put("user", "kbsystodo").put("password", "kbsystodo");
-//	
-	@Override
-	public String toString() {
-		return "DataSourceConfig [config=" + config + ", url=" + url + ", driver_class=" + driver_class + ", user="
-				+ user + ", password=" + password + "]";
-	}
-
 	public JsonObject getConfig() {
-
 		return config;
 	}
 
@@ -59,6 +49,12 @@ public class DataSourceConfig {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	@Override
+	public String toString() {
+		return "DataSourceConfig [config=" + config + ", url=" + url + ", driver_class=" + driver_class + ", user="
+				+ user + ", password=" + password + "]";
+	}
 
 	public DataSourceConfig() {
 		super();
@@ -66,8 +62,11 @@ public class DataSourceConfig {
 		setDriver_class("com.mysql.jdbc.Driver");
 		setUser("kbsystodo");
 		setPassword("kbsystodo");
-		setConfig(new JsonObject().put("url",this.url).put("driver_class",this.driver_class).put("user",this.user).put("password",this.password));
-
+		setConfig(new JsonObject()
+				.put("url",this.url)
+				.put("driver_class",this.driver_class)
+				.put("user",this.user)
+				.put("password",this.password));
 	}
 
 }

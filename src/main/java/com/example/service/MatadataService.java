@@ -20,11 +20,11 @@ public class MatadataService {
 		HttpServerResponse res = routingContext.response();
 		HttpServerRequest req = routingContext.request();
 		
-		res.putHeader("content-type", "application/json");
 		JsonArray params = new JsonArray().add(req.getParam("url"));
 		
 		con.queryWithParams(query.getGetData(), params, e ->{
 			ResultSet rs = e.result();
+			
 			if(rs.getNumRows() == 1) {
 				res.end(Json.encodePrettily(rs.getRows().get(0)));
 			} else {

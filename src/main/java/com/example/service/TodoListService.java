@@ -1,7 +1,7 @@
 package com.example.service;
 
 import java.io.File;
-import java.util.Calendar;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,48 +21,46 @@ import io.vertx.ext.web.RoutingContext;
 public class TodoListService {
 	TodoListMapper query = new TodoListMapper();
 	
-	
+	// Get TodoList InitData
 	public void getTodoList(RoutingContext routingContext, SQLClient con) {	
-		Map<String, Object> result = new HashMap<String, Object>(); // 결과 담는 객체
+		Map<String, Object> result = new HashMap<String, Object>(); 
 		HttpServerResponse response = routingContext.response();
-
-		response.putHeader("content-type", "application/json"); // json 타입으로
-		
-		con.query(query.getTotalCnt(), res2 -> { // TotalCnt 만드는 쿼리
+	
+		// Get TotalCnt
+		con.query(query.getTotalCnt(), res2 -> { 
 			ResultSet rs = res2.result();
 			result.put("totalCnt", rs.getNumRows());
 		});
 		
-		con.query(query.getSelectList(), res3 -> { // 전체테이블가져오는 쿼리
+		// Get Todos
+		con.query(query.getSelectList(), res3 -> {
 			ResultSet rs = res3.result();
 			result.put("todoList", rs.getRows());
-			System.out.println(result.toString());
-			response.end(Json.encodePrettily(result)); // result값을 리턴
 		});
 		
+		response.end(Json.encodePrettily(result));
 	}
-
+	
+	// Insert Todo
 	public void insertTodo(RoutingContext routingContext, SQLClient con) {
 		HttpServerRequest request = routingContext.request();
 	
 		String id = routingContext.request().getFormAttribute("id");
 		String fileName = routingContext.request().getFormAttribute("fileName");
 		
-		
 		JsonObject pubData = new JsonObject();
 		pubData.put("id", request.getParam("id"));
 		pubData.put("text", request.getParam("text"));
 		pubData.put("color", request.getParam("color"));
-		//pubData.put("moment", value);
 		
+		// File Upload ::: RenameFile = Save, OriginFile = Delete 
 		Set<FileUpload> uploads = routingContext.fileUploads();
 		for(FileUpload upload : uploads) {
 	        File uploadedFile = new File(upload.uploadedFileName());
 	        uploadedFile.renameTo(new File("files/" +id+"_"+upload.fileName()));
 	        try {
 				uploadedFile.createNewFile();
-			} 
-	        	catch (Exception e1) {
+			} catch (IOException e1) {
 			}
 	        new File(upload.uploadedFileName()).delete();
 		}
@@ -72,6 +70,7 @@ public class TodoListService {
 				.add(request.getParam("text"))
 				.add(request.getParam("color"));
 		
+		// uploadFile Null Check
 		if(fileName == null) {
 			params.addNull();
 			pubData.put("image", "null");
@@ -80,44 +79,47 @@ public class TodoListService {
 			pubData.put("image", "http://localhost:8080/api/image?fileName="+id+"_"+fileName);
 		}
 		
+		// Save Todo in DB
 		con.updateWithParams(query.getInsert(), params, e -> {});
+		
+		// Publish Insert data to another Socket
 		routingContext.vertx().eventBus().publish("todos", pubData.toString());
 		routingContext.response().end();
 	}
 
+	// Checked Todo
 	public void checkTodo(RoutingContext routingContext, SQLClient con) {
 		HttpServerRequest request = routingContext.request();
-
-		JsonArray params = new JsonArray() // update parameters 생성
-				.add(request.getParam("checked")).add(request.getParam("id"));
-
-		con.updateWithParams(query.getChecked(), params, e -> {
-		});
+		
+		JsonArray params = new JsonArray()
+				.add(request.getParam("checked"))
+				.add(request.getParam("id"));
+		
+		con.updateWithParams(query.getChecked(), params, e -> {});
 	}
 
+	// Delete Todo
 	public void deleteTodo(RoutingContext routingContext, SQLClient con) {
 		HttpServerRequest request = routingContext.request();
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("id"));
-		con.updateWithParams(query.getDelete(), params, e -> {
-		});
-		
+		con.updateWithParams(query.getDelete(), params, e -> {});
 	}
 
+	// Update Todo
 	public void updateTodo(RoutingContext routingContext, SQLClient con) {
 		HttpServerRequest request = routingContext.request();
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("text")).add(request.getParam("color")).add(request.getParam("checked"))
 				.add(request.getParam("id"));
-		con.updateWithParams(query.getUpdate(), params, e -> {
-		});
+		con.updateWithParams(query.getUpdate(), params, e -> {});
 	}
 	
+	// Get Image
 	public void getImage(RoutingContext routingContext, SQLClient con) {
 		HttpServerRequest request = routingContext.request();
 		String fileName = request.getParam("fileName");
-		request.response().sendFile("files/"+fileName, 0, ev ->{
-		});
-	};
+		request.response().sendFile("files/"+fileName, 0, e ->{});
+	}
 
 }
