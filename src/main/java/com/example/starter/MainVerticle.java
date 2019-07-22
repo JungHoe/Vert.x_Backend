@@ -23,10 +23,10 @@ public class MainVerticle extends AbstractVerticle {
 	public void start() throws Exception {
 		System.out.println("Vert.x is run...");
 		
-		Router router = Router.router(vertx); // vert.x 라우터연결
-		HttpServer server = vertx.createHttpServer(); // vert.x 서버 생성
+		Router router = Router.router(vertx); 
+		HttpServer server = vertx.createHttpServer(); 
 		
-		DataSourceConfig ds = new DataSourceConfig(); // DB connection
+		DataSourceConfig ds = new DataSourceConfig();
 		SQLClient con = JDBCClient.createShared(vertx, ds.getConfig()).getConnection(res -> {
 			if (res.succeeded()) {
 				System.out.println("DB connect Success");
@@ -62,22 +62,22 @@ public class MainVerticle extends AbstractVerticle {
 		});
 
 		// Checked Todo
-		router.patch("/checked").handler(routingContext -> {
+		router.post("/checked").handler(routingContext -> {
 			tService.checkTodo(routingContext, con);
 		});
 		
 		// Delete Todo
-		router.delete("/delete").handler(routingContext -> {
+		router.post("/delete").handler(routingContext -> {
 			tService.deleteTodo(routingContext, con);
 		});
 		
 		// Update Todo
-		router.patch("/todoitem").handler(routingContext -> {
+		router.post("/todoitem").handler(routingContext -> {
 			tService.updateTodo(routingContext,con);
 		});
 		
 		// Get Opengraph
-		router.get("/metadata").handler(routingContext->{
+		router.post("/metadata").handler(routingContext->{
 			mService.getData(routingContext, con);
 		});
 		

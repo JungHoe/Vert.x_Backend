@@ -9,7 +9,7 @@ public class TodoListMapper {
 	private final String delete = "update todoList2 set useYn = 'N' where id = ?";
 	private final String update = "update todoList2 set text = ? , color = ? , checked = ? where id = ?";
 	private final String todosList = "select id, text, checked, color, moment, useYn, image from todoList2";
-	
+	private String shareTodo = "select id, text, checked, color, moment, useYn, image from todoList2 where id =";
 	
 	public String getInsert() {
 		return insert;
@@ -38,6 +38,9 @@ public class TodoListMapper {
 	public String getTodosList() {
 		return todosList;
 	}
-	
+
+	public String getShareTodo(String id) {
+		return shareTodo+id;
+	}
 
 }

@@ -3,6 +3,7 @@ package com.example.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,9 +37,10 @@ public class TodoListService {
 		con.query(query.getSelectList(), res3 -> {
 			ResultSet rs = res3.result();
 			result.put("todoList", rs.getRows());
+			System.out.println("확인요 :: "+result.toString());
+			response.end(Json.encodePrettily(result));
 		});
 		
-		response.end(Json.encodePrettily(result));
 	}
 	
 	// Insert Todo
@@ -81,9 +83,11 @@ public class TodoListService {
 		
 		// Save Todo in DB
 		con.updateWithParams(query.getInsert(), params, e -> {});
-		
-		// Publish Insert data to another Socket
-		routingContext.vertx().eventBus().publish("todos", pubData.toString());
+		con.query(query.getShareTodo(id), e -> {
+				ResultSet rs = e.result();
+				List<JsonObject> list = rs.getRows();
+				routingContext.vertx().eventBus().publish("todos", list.get(0).toString());
+		});
 		routingContext.response().end();
 	}
 
@@ -96,6 +100,11 @@ public class TodoListService {
 				.add(request.getParam("id"));
 		
 		con.updateWithParams(query.getChecked(), params, e -> {});
+		con.query(query.getShareTodo(request.getParam("id")), e -> {
+			ResultSet rs = e.result();
+			List<JsonObject> list = rs.getRows();
+			routingContext.vertx().eventBus().publish("todos", list.get(0).toString());
+		});
 	}
 
 	// Delete Todo
@@ -104,6 +113,11 @@ public class TodoListService {
 		JsonArray params = new JsonArray() // update parameters 생성
 				.add(request.getParam("id"));
 		con.updateWithParams(query.getDelete(), params, e -> {});
+		con.query(query.getShareTodo(request.getParam("id")), e -> {
+			ResultSet rs = e.result();
+			List<JsonObject> list = rs.getRows();
+			routingContext.vertx().eventBus().publish("todos", list.get(0).toString());
+		});
 	}
 
 	// Update Todo
@@ -113,6 +127,11 @@ public class TodoListService {
 				.add(request.getParam("text")).add(request.getParam("color")).add(request.getParam("checked"))
 				.add(request.getParam("id"));
 		con.updateWithParams(query.getUpdate(), params, e -> {});
+		con.query(query.getShareTodo(request.getParam("id")), e -> {
+			ResultSet rs = e.result();
+			List<JsonObject> list = rs.getRows();
+			routingContext.vertx().eventBus().publish("todos", list.get(0).toString());
+		});
 	}
 	
 	// Get Image
