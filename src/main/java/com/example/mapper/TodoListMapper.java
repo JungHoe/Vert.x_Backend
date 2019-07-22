@@ -7,9 +7,11 @@ public class TodoListMapper {
 	private final String insert = "insert into todoList2 (id,text,color,image) values (?,?,?,?)";
 	private final String checked = "update todoList2 set checked = ? where id = ?";
 	private final String delete = "update todoList2 set useYn = 'N' where id = ?";
-	private final String update = "update todoList2 set text = ? , color = ? , checked = ? where id = ?";
+	private final String update1 = "update todoList2 set text = ? , color = ? , checked = ? where id = ?";
+	private final String update2 = "update todoList2 set text = ? , color = ? , checked = ?, image = ? where id = ?";
 	private final String todosList = "select id, text, checked, color, moment, useYn, image from todoList2";
 	private String shareTodo = "select id, text, checked, color, moment, useYn, image from todoList2 where id =";
+
 	
 	public String getInsert() {
 		return insert;
@@ -23,8 +25,12 @@ public class TodoListMapper {
 		return delete;
 	}
 
-	public String getUpdate() {
-		return update;
+	public String getUpdate1() {
+		return update1;
+	}
+	
+	public String getUpdate2() {
+		return update2;
 	}
 
 	public String getSelectList() {

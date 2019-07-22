@@ -122,17 +122,50 @@ public class TodoListService {
 
 	// Update Todo
 	public void updateTodo(RoutingContext routingContext, SQLClient con) {
-		HttpServerRequest request = routingContext.request();
-		JsonArray params = new JsonArray() // update parameters 생성
-				.add(request.getParam("text")).add(request.getParam("color")).add(request.getParam("checked"))
-				.add(request.getParam("id"));
-		con.updateWithParams(query.getUpdate(), params, e -> {});
+        HttpServerRequest request = routingContext.request();
+        JsonArray params = new JsonArray(); // update parameters 생성
+        String updateQuery= "";
+        
+        params.add(request.getFormAttribute("text")).add(request.getFormAttribute("color"))
+        .add(request.getFormAttribute("checked"));
+        
+        
+        if(request.getFormAttribute("action").equals("notImgUpdated")) {
+        	System.out.println("변경없음");
+            params.add(request.getParam("id"));
+            updateQuery=query.getUpdate1();
+		
+        }else if(request.getFormAttribute("action").equals("imgDeleted")) {
+        	System.out.println("이미지 삭제");
+            params.addNull().add(request.getParam("id"));
+            updateQuery=query.getUpdate2();
+		
+        }else if(request.getFormAttribute("action").equals("insertImage")) {
+        	System.out.println("이미지 업로드");
+        	updateQuery=query.getUpdate2();
+
+            String fileName = request.getFormAttribute("fileName");
+            Set<FileUpload> uploads = routingContext.fileUploads();
+            for(FileUpload upload : uploads) {
+                File uploadedFile = new File(upload.uploadedFileName());
+                uploadedFile.renameTo(new File("files/" +request.getParam("id")+"_"+upload.fileName()));
+                try {
+                    uploadedFile.createNewFile();
+                }
+                    catch (Exception e1) {
+                }
+                new File(upload.uploadedFileName()).delete();
+            }
+            params.add("http://localhost:8080/api/image?fileName="+request.getParam("id")+"_"+fileName).add(request.getParam("id"));
+        }
+        
+        con.updateWithParams(updateQuery, params, e -> {});
 		con.query(query.getShareTodo(request.getParam("id")), e -> {
 			ResultSet rs = e.result();
 			List<JsonObject> list = rs.getRows();
 			routingContext.vertx().eventBus().publish("todos", list.get(0).toString());
 		});
-	}
+    }
 	
 	// Get Image
 	public void getImage(RoutingContext routingContext, SQLClient con) {
