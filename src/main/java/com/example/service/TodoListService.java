@@ -42,7 +42,6 @@ public class TodoListService {
 		System.out.println("진입");
 		String id = routingContext.request().getFormAttribute("id");
 		String fileName = routingContext.request().getFormAttribute("fileName");
-			
 		Set<FileUpload> uploads = routingContext.fileUploads();
 		for(FileUpload upload : uploads) {
 	        File uploadedFile = new File(upload.uploadedFileName());
@@ -89,11 +88,49 @@ public class TodoListService {
 	}
 
 	public void updateTodo(RoutingContext routingContext, SQLClient con) {
+		
+		
+		
 		HttpServerRequest request = routingContext.request();
-		JsonArray params = new JsonArray() // update parameters 생성
-				.add(request.getParam("text")).add(request.getParam("color")).add(request.getParam("checked"))
-				.add(request.getParam("id"));
-		con.updateWithParams(query.getUpdate(), params, e -> {
+		JsonArray params = new JsonArray(); // update parameters 생성
+		params.add(request.getFormAttribute("text")).add(request.getFormAttribute("color"))
+		.add(request.getFormAttribute("checked"));
+		String updateQuery="";
+		
+		if(request.getFormAttribute("action").equals("notImgUpdated")) {
+//			System.out.println("1번");
+			params.add(request.getParam("id"));
+			updateQuery=query.getUpdate();
+			
+			
+			
+		}else if(request.getFormAttribute("action").equals("imgDeleted")) {
+//			System.out.println("2번");
+			params.addNull().add(request.getParam("id"));
+			updateQuery=query.getUpdate2();
+		//파일삭제하는법:	 File uploadedFile = new File("files/파일명");			 uploadedFile.delete();
+		}else if(request.getFormAttribute("action").equals("imageUpdated")) {
+//			System.out.println("3번");
+			String fileName = request.getFormAttribute("fileName");
+			Set<FileUpload> uploads = routingContext.fileUploads();
+			for(FileUpload upload : uploads) {
+		        File uploadedFile = new File(upload.uploadedFileName());
+		        uploadedFile.renameTo(new File("files/" +request.getParam("id")+"_"+upload.fileName()));
+		        try {
+					uploadedFile.createNewFile();
+				} 
+		        	catch (Exception e1) {
+				}
+		        new File(upload.uploadedFileName()).delete();
+			}
+			params.add("http://localhost:8080/image?fileName="+request.getParam("id")+"_"+fileName).add(request.getParam("id"));
+			updateQuery=query.getUpdate2();
+		}
+		
+		
+	
+				
+		con.updateWithParams(updateQuery, params, e -> {
 		});
 	}
 	
