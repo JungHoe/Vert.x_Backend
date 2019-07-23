@@ -77,7 +77,7 @@ public class MainVerticle extends AbstractVerticle {
 		});
 		
 		// Get Opengraph
-		router.post("/metadata").handler(routingContext->{
+		router.get("/metadata").handler(routingContext->{
 			mService.getData(routingContext, con);
 		});
 		
@@ -92,10 +92,11 @@ public class MainVerticle extends AbstractVerticle {
 	// SockJS EventBus Handler - Socket Create
 	private SockJSHandler eventBusHandler() {
 		BridgeOptions options = new BridgeOptions()
-				.addOutboundPermitted(new PermittedOptions().setAddressRegex("todos"));
+				
+				.addOutboundPermitted(new PermittedOptions().setAddress("todos"));
         return SockJSHandler.create(vertx).bridge(options, event -> {
             if (event.type() == BridgeEventType.SOCKET_CREATED) {
-            	System.out.println("socket created");
+            	//System.out.println("socket created");
             }
             event.complete(true);
         });
